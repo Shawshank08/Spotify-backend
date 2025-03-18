@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Serve static files (e.g., MP3 files) from the "songs" folder
 app.use("/songs", express.static(path.join(__dirname, "songs")));
@@ -17,6 +17,11 @@ app.get("/songs", (req, res) => {
     const mp3Files = files.filter(file => file.endsWith(".mp3"));
     res.json(mp3Files);
   });
+});
+
+// Route for the root URL
+app.get("/", (req, res) => {
+  res.send("Welcome to the Music Player Backend!");
 });
 
 app.listen(port, () => {
