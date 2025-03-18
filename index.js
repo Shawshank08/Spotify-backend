@@ -5,7 +5,8 @@ const port = process.env.PORT || 3000;
 
 // Serve static files (e.g., MP3 files) from the "songs" folder
 app.use("/songs", express.static(path.join(__dirname, "songs")));
-
+const cors = require("cors");
+app.use(cors({ origin: "https://spotifycloneshashank.netlify.app/" }));
 // Endpoint to list songs
 app.get("/songs", (req, res) => {
   const songsDir = path.join(__dirname, "songs");
