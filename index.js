@@ -13,7 +13,7 @@ app.use("/songs", express.static(path.join(__dirname, "songs"), {
     // Set CORS headers for static files
     res.set("Access-Control-Allow-Origin", "https://spotifycloneshashank.netlify.app");
   },
-});
+}));
 
 // Endpoint to list songs
 app.get("/songs", (req, res) => {
