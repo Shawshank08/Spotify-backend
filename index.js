@@ -15,19 +15,18 @@ app.use("/songs", express.static(path.join(__dirname, "songs"), {
   },
 }));
 
-// Endpoint to list songs
 app.get("/songs", (req, res) => {
-  const songsDir = path.join(__dirname, "songs");
-  const fs = require("fs");
-  fs.readdir(songsDir, (err, files) => {
-    if (err) {
-      return res.status(500).send("Unable to scan songs directory");
-    }
-    const mp3Files = files.filter(file => file.endsWith(".mp3"));
-    res.json(mp3Files);
-  });
+    const songsDir = path.join(__dirname, "songs");
+    const fs = require("fs");
+    fs.readdir(songsDir, (err, files) => {
+        if (err) {
+            return res.status(500).send("Unable to scan songs directory");
+        }
+        const mp3Files = files.filter(file => file.endsWith(".mp3"));
+        res.setHeader("Content-Type", "application/json"); // Set the Content-Type header
+        res.json(mp3Files);
+    });
 });
-
 // Route for the root URL
 app.get("/", (req, res) => {
   res.send("Welcome to the Music Player Backend!");
