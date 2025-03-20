@@ -16,16 +16,19 @@ app.use("/songs", express.static(path.join(__dirname, "songs"), {
   }
 }));
 
-// Endpoint to list songs (root songs directory)
+// Endpoint to list folders (albums) in the "songs" directory
 app.get("/songs", (req, res) => {
   const songsDir = path.join(__dirname, "songs");
-  fs.readdir(songsDir, (err, files) => {
+  fs.readdir(songsDir, { withFileTypes: true }, (err, files) => {
     if (err) {
       return res.status(500).send("Unable to scan songs directory");
     }
-    const mp3Files = files.filter(file => file.endsWith(".mp3"));
+    // Filter out only directories (albums)
+    const folders = files
+      .filter(file => file.isDirectory())
+      .map(dir => dir.name);
     res.setHeader("Content-Type", "application/json");
-    res.json(mp3Files);
+    res.json(folders);
   });
 });
 
