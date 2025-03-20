@@ -16,53 +16,31 @@ app.use("/songs", express.static(path.join(__dirname, "songs"), {
   }
 }));
 
-// Function to recursively scan directories for .mp3 files
-function scanDirectory(dir) {
-  let results = [];
-  const list = fs.readdirSync(dir);
-  list.forEach(file => {
-    const filePath = path.join(dir, file);
-    const stat = fs.statSync(filePath);
-    if (stat && stat.isDirectory()) {
-      // Recursively scan subdirectories
-      results = results.concat(scanDirectory(filePath));
-    } else if (file.endsWith(".mp3")) {
-      // Add .mp3 files to the results
-      results.push(filePath);
-    }
-  });
-  return results;
-}
-
 // Endpoint to list songs (root songs directory)
 app.get("/songs", (req, res) => {
   const songsDir = path.join(__dirname, "songs");
-  try {
-    const mp3Files = scanDirectory(songsDir);
-    // Convert absolute paths to relative paths (for easier frontend use)
-    const relativePaths = mp3Files.map(file => path.relative(songsDir, file));
+  fs.readdir(songsDir, (err, files) => {
+    if (err) {
+      return res.status(500).send("Unable to scan songs directory");
+    }
+    const mp3Files = files.filter(file => file.endsWith(".mp3"));
     res.setHeader("Content-Type", "application/json");
-    res.json(relativePaths);
-  } catch (err) {
-    console.error("Error scanning songs directory:", err);
-    res.status(500).send("Unable to scan songs directory");
-  }
+    res.json(mp3Files);
+  });
 });
 
 // Endpoint to list songs from a specific folder
 app.get("/songs/:folder", (req, res) => {
   const folder = req.params.folder;
   const songsDir = path.join(__dirname, "songs", folder);
-  try {
-    const mp3Files = scanDirectory(songsDir);
-    // Convert absolute paths to relative paths (for easier frontend use)
-    const relativePaths = mp3Files.map(file => path.relative(songsDir, file));
+  fs.readdir(songsDir, (err, files) => {
+    if (err) {
+      return res.status(500).send("Unable to scan songs directory");
+    }
+    const mp3Files = files.filter(file => file.endsWith(".mp3"));
     res.setHeader("Content-Type", "application/json");
-    res.json(relativePaths);
-  } catch (err) {
-    console.error("Error scanning songs directory:", err);
-    res.status(500).send("Unable to scan songs directory");
-  }
+    res.json(mp3Files);
+  });
 });
 
 // Endpoint to serve album info (info.json)
